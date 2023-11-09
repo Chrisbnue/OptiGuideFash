@@ -31,8 +31,8 @@ ftw_needed_for_stores = {'Berlin-CS': 20, 'Paris-CS': 30, 'LDN-CS': 40}
 
 app_needed_for_stores = {'Berlin-CS': 20, 'Paris-CS': 20, 'LDN-CS': 100}
 
-cafes = list(set(i[1] for i in shipping_cost_from_DC_to_store.keys()))
-roasteries = list(
+stores = list(set(i[1] for i in shipping_cost_from_DC_to_store.keys()))
+DCs = list(
     set(i[1] for i in shipping_cost_from_supplier_to_DC.keys()))
 suppliers = list(
     set(i[0] for i in shipping_cost_from_supplier_to_DC.keys()))
