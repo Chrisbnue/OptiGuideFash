@@ -46,21 +46,21 @@ model = Model("Fashion Supply Chain")
 x = model.addVars(shipping_cost_from_supplier_to_DC.keys(),
                   vtype=GRB.INTEGER,
                   name="x")
-y_light = model.addVars(shipping_cost_from_DC_to_store.keys(),
+y_ftw = model.addVars(shipping_cost_from_DC_to_store.keys(),
                         vtype=GRB.INTEGER,
-                        name="y_light")
-y_dark = model.addVars(shipping_cost_from_DC_to_store.keys(),
+                        name="y_ftw")
+y_app = model.addVars(shipping_cost_from_DC_to_store.keys(),
                        vtype=GRB.INTEGER,
-                       name="y_dark")
+                       name="y_app")
 
 # Set objective
 model.setObjective(
     sum(x[i] * shipping_cost_from_supplier_to_DC[i]
         for i in shipping_cost_from_supplier_to_DC.keys()) +
-    sum(inventory_cost_ftw[r] * y_light[r, c] +
-        inventory_cost_apparel[r] * y_dark[r, c]
+    sum(inventory_cost_ftw[r] * y_ftw[r, c] +
+        inventory_cost_apparel[r] * y_app[r, c]
         for r, c in shipping_cost_from_DC_to_store.keys()) + sum(
-            (y_light[j] + y_dark[j]) * shipping_cost_from_DC_to_store[j]
+            (y_ftw[j] + y_app[j]) * shipping_cost_from_DC_to_store[j]
             for j in shipping_cost_from_DC_to_store.keys()), GRB.MINIMIZE)
 
 # Conservation of flow constraint
@@ -68,7 +68,7 @@ for r in set(i[1] for i in shipping_cost_from_supplier_to_DC.keys()):
     model.addConstr(
         sum(x[i] for i in shipping_cost_from_supplier_to_DC.keys()
             if i[1] == r) == sum(
-                y_light[j] + y_dark[j]
+                y_ftw[j] + y_app[j]
                 for j in shipping_cost_from_DC_to_store.keys()
                 if j[0] == r), f"flow_{r}")
 
@@ -81,11 +81,11 @@ for s in set(i[0] for i in shipping_cost_from_supplier_to_DC.keys()):
 # Add demand constraints
 for c in set(i[1] for i in shipping_cost_from_DC_to_store.keys()):
     model.addConstr(
-        sum(y_light[j] for j in shipping_cost_from_DC_to_store.keys()
+        sum(y_ftw[j] for j in shipping_cost_from_DC_to_store.keys()
             if j[1] == c) >= ftw_needed_for_stores[c],
         f"light_demand_{c}")
     model.addConstr(
-        sum(y_dark[j] for j in shipping_cost_from_DC_to_store.keys()
+        sum(y_app[j] for j in shipping_cost_from_DC_to_store.keys()
             if j[1] == c) >= app_needed_for_stores[c],
         f"dark_demand_{c}")
 
