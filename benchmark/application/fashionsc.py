@@ -83,11 +83,11 @@ for c in set(i[1] for i in shipping_cost_from_DC_to_store.keys()):
     model.addConstr(
         sum(y_ftw[j] for j in shipping_cost_from_DC_to_store.keys()
             if j[1] == c) >= ftw_needed_for_stores[c],
-        f"light_demand_{c}")
+        f"ftw_demand_{c}")
     model.addConstr(
         sum(y_app[j] for j in shipping_cost_from_DC_to_store.keys()
             if j[1] == c) >= app_needed_for_stores[c],
-        f"dark_demand_{c}")
+        f"app_demand_{c}")
 
 # Optimize model
 model.optimize()
