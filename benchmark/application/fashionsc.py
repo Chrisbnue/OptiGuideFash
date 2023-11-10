@@ -40,8 +40,6 @@ suppliers = list(
 # Create a new model
 model = Model("Fashion Supply Chain")
 
-# OPTIGUIDE DATA CODE GOES HERE
-
 # Create variables
 x = model.addVars(shipping_cost_from_supplier_to_DC.keys(),
                   vtype=GRB.INTEGER,
@@ -52,6 +50,8 @@ y_ftw = model.addVars(shipping_cost_from_DC_to_store.keys(),
 y_app = model.addVars(shipping_cost_from_DC_to_store.keys(),
                        vtype=GRB.INTEGER,
                        name="y_app")
+
+# OPTIGUIDE DATA CODE GOES HERE
 
 # Set objective
 model.setObjective(
