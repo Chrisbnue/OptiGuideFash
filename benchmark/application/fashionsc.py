@@ -42,9 +42,6 @@ model = Model("Fashion Supply Chain")
 
 # OPTIGUIDE DATA CODE GOES HERE
 
-# Create a new model AFTER MODEL INSTANTIATION (POTENTIAL BUGFIX)
-model = Model("Fashion Supply Chain")
-
 # Create variables
 x = model.addVars(shipping_cost_from_supplier_to_DC.keys(),
                   vtype=GRB.INTEGER,
