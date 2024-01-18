@@ -67,13 +67,10 @@ model.setObjective(
     GRB.MINIMIZE)
 
 # Conservation of flow constraint
-for r in set(i[1] for i in shipping_cost_from_supplier_to_DC.keys()):
+for r in DCs:
     model.addConstr(
-        sum(x[i] for i in shipping_cost_from_supplier_to_DC.keys()
-            if i[1] == r) == sum(
-                y_ftw[j] + y_app[j]
-                for j in shipping_cost_from_DC_to_store.keys()
-                if j[0] == r), f"flow_{r}")
+        sum(x_ftw[s, r] + x_app[s, r] for s in suppliers) == sum(y_ftw[r, c] + y_app[r, c] for c in stores), 
+        f"flow_{r}")
 
 # Add supply constraints
 for s in suppliers:
@@ -82,14 +79,12 @@ for s in suppliers:
         f"supply_{s}")
 
 # Add demand constraints
-for c in set(i[1] for i in shipping_cost_from_DC_to_store.keys()):
+for c in stores:
     model.addConstr(
-        sum(y_ftw[j] for j in shipping_cost_from_DC_to_store.keys()
-            if j[1] == c) >= ftw_needed_for_stores[c],
+        sum(y_ftw[r, c] for r in DCs) >= ftw_needed_for_stores[c],
         f"ftw_demand_{c}")
     model.addConstr(
-        sum(y_app[j] for j in shipping_cost_from_DC_to_store.keys()
-            if j[1] == c) >= app_needed_for_stores[c],
+        sum(y_app[r, c] for r in DCs) >= app_needed_for_stores[c],
         f"app_demand_{c}")
 
 # Optimize model
