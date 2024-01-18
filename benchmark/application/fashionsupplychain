@@ -61,13 +61,10 @@ y_app = model.addVars(shipping_cost_from_DC_to_store.keys(),
 
 # Set objective
 model.setObjective(
-    sum(x[i] * shipping_cost_from_supplier_to_DC[i]
-        for i in shipping_cost_from_supplier_to_DC.keys()) +
-    sum(inventory_cost_ftw[r] * y_ftw[r, c] +
-        inventory_cost_apparel[r] * y_app[r, c]
-        for r, c in shipping_cost_from_DC_to_store.keys()) + sum(
-            (y_ftw[j] + y_app[j]) * shipping_cost_from_DC_to_store[j]
-            for j in shipping_cost_from_DC_to_store.keys()), GRB.MINIMIZE)
+    sum(x_ftw[i] * shipping_cost_ftw[i] + x_app[i] * shipping_cost_app[i] for i in shipping_cost_from_supplier_to_DC.keys()) +
+    sum(inventory_cost_ftw[r] * y_ftw[r, c] + inventory_cost_apparel[r] * y_app[r, c] for r, c in shipping_cost_from_DC_to_store.keys()) +
+    sum((y_ftw[j] + y_app[j]) * shipping_cost_from_DC_to_store[j] for j in shipping_cost_from_DC_to_store.keys()), 
+    GRB.MINIMIZE)
 
 # Conservation of flow constraint
 for r in set(i[1] for i in shipping_cost_from_supplier_to_DC.keys()):
