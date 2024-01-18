@@ -44,6 +44,12 @@ model = Model("Fashion Supply Chain")
 x = model.addVars(shipping_cost_from_supplier_to_DC.keys(),
                   vtype=GRB.INTEGER,
                   name="x")
+x_ftw = model.addVars(shipping_cost_from_supplier_to_DC.keys(),
+                      vtype=GRB.INTEGER,
+                      name="x_ftw")
+x_app = model.addVars(shipping_cost_from_supplier_to_DC.keys(),
+                      vtype=GRB.INTEGER,
+                      name="x_app")
 y_ftw = model.addVars(shipping_cost_from_DC_to_store.keys(),
                         vtype=GRB.INTEGER,
                         name="y_ftw")
@@ -73,10 +79,10 @@ for r in set(i[1] for i in shipping_cost_from_supplier_to_DC.keys()):
                 if j[0] == r), f"flow_{r}")
 
 # Add supply constraints
-for s in set(i[0] for i in shipping_cost_from_supplier_to_DC.keys()):
+for s in suppliers:
     model.addConstr(
-        sum(x[i] for i in shipping_cost_from_supplier_to_DC.keys()
-            if i[0] == s) <= capacity_in_supplier[s], f"supply_{s}")
+        sum(x_ftw[s, r] for r in DCs) + sum(x_app[s, r] for r in DCs) <= capacity_in_supplier[s], 
+        f"supply_{s}")
 
 # Add demand constraints
 for c in set(i[1] for i in shipping_cost_from_DC_to_store.keys()):
