@@ -1,0 +1,105 @@
+import time
+from gurobipy import GRB, Model
+
+# Example data
+capacity_in_supplier = {'supplier1': 150, 'supplier2': 50, 'supplier3': 100}
+
+# Note: Shipping costs from suppliers to DCs remain unchanged.
+# Shipping costs from DCs to sales channels (previously stores)
+shipping_cost_from_DC_to_channel = {
+    # For EU DC
+    ('EU', 'Retail'): 5,
+    ('EU', 'WHS'): 3,
+    ('EU', 'Ecom'): 6,
+    # For NAM DC
+    ('NAM', 'Retail'): 4,
+    ('NAM', 'WHS'): 5,
+    ('NAM', 'Ecom'): 2,
+    # For GCA DC
+    ('GCA', 'Retail'): 5,
+    ('GCA', 'WHS'): 3,
+    ('GCA', 'Ecom'): 6,
+    # For LAM DC
+    ('LAM', 'Retail'): 5,
+    ('LAM', 'WHS'): 3,
+    ('LAM', 'Ecom'): 6,
+}
+
+inventory_cost_ftw = {'EU': 3, 'NAM': 5, 'GCA': 3, 'LAM': 3}
+inventory_cost_apparel = {'EU': 5, 'NAM': 6, 'GCA': 5, 'LAM': 5}
+
+# Demand for FTW and Apparel by channel and DC
+# Assuming demand values need to be defined, adjust these as per actual requirements
+ftw_demand_per_channel_and_dc = {
+    ('EU', 'Retail'): 20, ('EU', 'WHS'): 30, ('EU', 'Ecom'): 40,
+    ('NAM', 'Retail'): 20, ('NAM', 'WHS'): 30, ('NAM', 'Ecom'): 40,
+    ('GCA', 'Retail'): 20, ('GCA', 'WHS'): 30, ('GCA', 'Ecom'): 40,
+    ('LAM', 'Retail'): 20, ('LAM', 'WHS'): 30, ('LAM', 'Ecom'): 40,
+}
+
+app_demand_per_channel_and_dc = {
+    ('EU', 'Retail'): 20, ('EU', 'WHS'): 20, ('EU', 'Ecom'): 100,
+    ('NAM', 'Retail'): 20, ('NAM', 'WHS'): 20, ('NAM', 'Ecom'): 100,
+    ('GCA', 'Retail'): 20, ('GCA', 'WHS'): 20, ('GCA', 'Ecom'): 100,
+    ('LAM', 'Retail'): 20, ('LAM', 'WHS'): 20, ('LAM', 'Ecom'): 100,
+}
+
+# Create a new model
+model = Model("Fashion Supply Chain")
+
+# Create variables
+x = model.addVars(shipping_cost_from_supplier_to_DC.keys(),
+                  vtype=GRB.INTEGER,
+                  name="x")
+y_ftw = model.addVars(shipping_cost_from_DC_to_channel.keys(),
+                      vtype=GRB.INTEGER,
+                      name="y_ftw")
+y_app = model.addVars(shipping_cost_from_DC_to_channel.keys(),
+                      vtype=GRB.INTEGER,
+                      name="y_app")
+
+# OPTIGUIDE DATA CODE GOES HERE
+
+# Set objective
+model.setObjective(
+    sum(x[i] * shipping_cost_from_supplier_to_DC[i] for i in shipping_cost_from_supplier_to_DC.keys()) +
+    sum(inventory_cost_ftw[r] * y_ftw[(r, c)] + inventory_cost_apparel[r] * y_app[(r, c)]
+        for r, c in shipping_cost_from_DC_to_channel.keys()) +
+    sum((y_ftw[j] + y_app[j]) * shipping_cost_from_DC_to_channel[j] for j in shipping_cost_from_DC_to_channel.keys()),
+    GRB.MINIMIZE)
+
+# Conservation of flow constraint
+for r in ['EU', 'NAM', 'GCA', 'LAM']:
+    model.addConstr(
+        sum(x[i] for i in shipping_cost_from_supplier_to_DC.keys() if i[1] == r) ==
+        sum(y_ftw[(r, c)] + y_app[(r, c)] for c in ['Retail', 'WHS', 'Ecom']), f"flow_{r}")
+
+# Add supply constraints
+for s in set(i[0] for i in shipping_cost_from_supplier_to_DC.keys()):
+    model.addConstr(
+        sum(x[i] for i in shipping_cost_from_supplier_to_DC.keys()
+            if i[0] == s) <= capacity_in_supplier[s], f"supply_{s}")
+
+# Add demand constraints
+for r, c in shipping_cost_from_DC_to_channel.keys():
+    model.addConstr(
+        y_ftw[(r, c)] >= ftw_demand_per_channel_and_dc[(r, c)], f"ftw_demand_{r}_{c}")
+    model.addConstr(
+        y_app[(r, c)] >= app_demand_per_channel_and_dc[(r, c)], f"app_demand_{r}_{c}")
+
+# Optimize model
+model.optimize()
+m = model
+
+# OPTIGUIDE CONSTRAINT CODE GOES HERE
+
+# Solve
+m.update()
+model.optimize()
+
+# Output results
+print(time.ctime())
+if model.status == GRB.OPTIMAL:
+    print(f'Optimal cost: {model.objVal}')
+else:
+    print("Not solved to optimality. Optimization status:", model.status)
