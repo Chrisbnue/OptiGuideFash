@@ -5,37 +5,48 @@ from gurobipy import GRB, Model
 
 capacity_in_supplier = {'supplier1': 150, 'supplier2': 50, 'supplier3': 100}
 
+# Updated shipping costs from suppliers to DCs with renamed and added DCs
 shipping_cost_from_supplier_to_DC = {
-    ('supplier1', 'CDC'): 5,
-    ('supplier1', 'LDC'): 4,
-    ('supplier2', 'CDC'): 6,
-    ('supplier2', 'LDC'): 3,
-    ('supplier3', 'CDC'): 2,
-    ('supplier3', 'LDC'): 7
+    ('supplier1', 'EU'): 5,
+    ('supplier1', 'NAM'): 4,
+    ('supplier1', 'GCA'): 5,  # Inherited from CDC
+    ('supplier1', 'LAM'): 5,  # Inherited from CDC
+    ('supplier2', 'EU'): 6,
+    ('supplier2', 'NAM'): 3,
+    ('supplier2', 'GCA'): 6,  # Inherited from CDC
+    ('supplier2', 'LAM'): 6,  # Inherited from CDC
+    ('supplier3', 'EU'): 2,
+    ('supplier3', 'NAM'): 7,
+    ('supplier3', 'GCA'): 2,  # Inherited from CDC
+    ('supplier3', 'LAM'): 2   # Inherited from CDC
 }
 
-inventory_cost_ftw = {'CDC': 3, 'LDC': 5}
+inventory_cost_ftw = {'EU': 3, 'NAM': 5, 'GCA': 3, 'LAM': 3}  # Inherited from CDC for GCA and LAM
+inventory_cost_apparel = {'EU': 5, 'NAM': 6, 'GCA': 5, 'LAM': 5}  # Inherited from CDC for GCA and LAM
 
-inventory_cost_apparel = {'CDC': 5, 'LDC': 6}
-
+# Updated shipping costs from DCs to stores with renamed DCs and added DCs
 shipping_cost_from_DC_to_store = {
-    ('CDC', 'Berlin-CS'): 5,
-    ('CDC', 'Paris-CS'): 3,
-    ('CDC', 'LDN-CS'): 6,
-    ('LDC', 'Berlin-CS'): 4,
-    ('LDC', 'Paris-CS'): 5,
-    ('LDC', 'LDN-CS'): 2
+    ('EU', 'Berlin-CS'): 5,
+    ('EU', 'Paris-CS'): 3,
+    ('EU', 'LDN-CS'): 6,
+    ('NAM', 'Berlin-CS'): 4,
+    ('NAM', 'Paris-CS'): 5,
+    ('NAM', 'LDN-CS'): 2,
+    ('GCA', 'Berlin-CS'): 5,  # Inherited from CDC
+    ('GCA', 'Paris-CS'): 3,   # Inherited from CDC
+    ('GCA', 'LDN-CS'): 6,     # Inherited from CDC
+    ('LAM', 'Berlin-CS'): 5,  # Inherited from CDC
+    ('LAM', 'Paris-CS'): 3,   # Inherited from CDC
+    ('LAM', 'LDN-CS'): 6      # Inherited from CDC
 }
 
 ftw_needed_for_stores = {'Berlin-CS': 20, 'Paris-CS': 30, 'LDN-CS': 40}
-
 app_needed_for_stores = {'Berlin-CS': 20, 'Paris-CS': 20, 'LDN-CS': 100}
 
+# Adjusted to include new DCs
 stores = list(set(i[1] for i in shipping_cost_from_DC_to_store.keys()))
-DCs = list(
-    set(i[1] for i in shipping_cost_from_supplier_to_DC.keys()))
-suppliers = list(
-    set(i[0] for i in shipping_cost_from_supplier_to_DC.keys()))
+DCs = ['EU', 'NAM', 'GCA', 'LAM']  # Explicitly defining DCs to include new ones
+suppliers = list(set(i[0] for i in shipping_cost_from_supplier_to_DC.keys()))
 
 # Create a new model
 model = Model("Fashion Supply Chain")
@@ -45,11 +56,14 @@ x = model.addVars(shipping_cost_from_supplier_to_DC.keys(),
                   vtype=GRB.INTEGER,
                   name="x")
 y_ftw = model.addVars(shipping_cost_from_DC_to_store.keys(),
-                        vtype=GRB.INTEGER,
-                        name="y_ftw")
+                      vtype=GRB.INTEGER,
+                      name="y_ftw")
 y_app = model.addVars(shipping_cost_from_DC_to_store.keys(),
-                       vtype=GRB.INTEGER,
-                       name="y_app")
+                      vtype=GRB.INTEGER,
+                      name="y_app")
+
+# The rest of the script remains the same, as the logic for constraints and optimization doesn't change with the renaming and addition of the DCs.
+
 
 # OPTIGUIDE DATA CODE GOES HERE
 
