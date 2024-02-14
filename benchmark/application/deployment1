@@ -11,7 +11,7 @@ shipping_cost_from_supplier_to_DC = {
     ('supplier2', 'EU'): 6,
     ('supplier2', 'NAM'): 3,
     ('supplier3', 'EU'): 2,
-    ('supplier3', 'NAM'): 7
+    ('supplier3', 'NAM'): 7,
     ('supplier1', 'GCA'): 5,
     ('supplier2', 'GCA'): 6,
     ('supplier3', 'GCA'): 2,
