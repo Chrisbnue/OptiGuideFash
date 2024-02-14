@@ -13,11 +13,8 @@ shipping_cost_from_supplier_to_DC = {
     ('supplier3', 'EU'): 2,
     ('supplier3', 'NAM'): 7
     ('supplier1', 'GCA'): 5,
-#    ('supplier1', 'LAM'): 4,
     ('supplier2', 'GCA'): 6,
-#    ('supplier2', 'LAM'): 3,
     ('supplier3', 'GCA'): 2,
-#    ('supplier3', 'LAM'): 7
 }
 
 
@@ -36,9 +33,6 @@ shipping_cost_from_DC_to_channel = {
     ('GCA', 'WHS'): 3,
     ('GCA', 'Ecom'): 6,
     # For LAM DC
-#    ('LAM', 'Retail'): 5,
-#    ('LAM', 'WHS'): 3,
-#    ('LAM', 'Ecom'): 6,
 }
 
 #LAM excluded
@@ -51,14 +45,12 @@ ftw_demand_per_channel_and_dc = {
     ('EU', 'Retail'): 20, ('EU', 'WHS'): 30, ('EU', 'Ecom'): 40,
     ('NAM', 'Retail'): 20, ('NAM', 'WHS'): 30, ('NAM', 'Ecom'): 40,
     ('GCA', 'Retail'): 20, ('GCA', 'WHS'): 30, ('GCA', 'Ecom'): 40,
-#    ('LAM', 'Retail'): 20, ('LAM', 'WHS'): 30, ('LAM', 'Ecom'): 40,
 }
 
 app_demand_per_channel_and_dc = {
     ('EU', 'Retail'): 20, ('EU', 'WHS'): 20, ('EU', 'Ecom'): 100,
     ('NAM', 'Retail'): 20, ('NAM', 'WHS'): 20, ('NAM', 'Ecom'): 100,
     ('GCA', 'Retail'): 20, ('GCA', 'WHS'): 20, ('GCA', 'Ecom'): 100,
-#    ('LAM', 'Retail'): 20, ('LAM', 'WHS'): 20, ('LAM', 'Ecom'): 100,
 }
 
 # Create a new model
