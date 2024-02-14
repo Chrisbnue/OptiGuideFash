@@ -4,7 +4,7 @@ from gurobipy import GRB, Model
 # Example data
 capacity_in_supplier = {'supplier1': 150, 'supplier2': 50, 'supplier3': 100}
 
-#Shipping Cost from Suppliers in Asia to markets (nameds as DC)
+#Shipping Cost from Suppliers in Asia to markets (named as DC)
 shipping_cost_from_supplier_to_DC = {
     ('supplier1', 'EU'): 5,
     ('supplier1', 'NAM'): 4,
