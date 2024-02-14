@@ -113,7 +113,20 @@ if model.status == GRB.OPTIMAL:
 else:
     print("Not solved to optimality. Optimization status:", model.status)
 
+import pandas as pd
 
+# Assuming optimization was successful
+if model.status == GRB.OPTIMAL:
+    data = []
+    for var in model.getVars():
+        if var.x > 0:  # Only consider non-zero flows
+            data.append([var.varName.split('[')[1].split(']')[0].replace("'", "").split(', '), var.x])
+    
+    # Create a DataFrame
+    df = pd.DataFrame(data, columns=['Flow', 'Quantity'])
+    print(df)
+
+# If model is infeasible
 if model.status == GRB.INF_OR_UNBD or model.status == GRB.INFEASIBLE:
     print('Model is infeasible; running IIS')
     model.computeIIS()  # This function identifies the Irreducible Inconsistent Subsystem
