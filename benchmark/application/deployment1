@@ -2,7 +2,7 @@ import time
 from gurobipy import GRB, Model
 
 # Example data
-capacity_in_supplier = {'supplier1': 150, 'supplier2': 50, 'supplier3': 100}
+capacity_in_supplier = {'supplier1': 1500, 'supplier2': 500, 'supplier3': 1000}
 
 #Shipping Cost from Suppliers in Asia to markets (named as DC)
 shipping_cost_from_supplier_to_DC = {
@@ -112,3 +112,14 @@ if model.status == GRB.OPTIMAL:
     print(f'Optimal cost: {model.objVal}')
 else:
     print("Not solved to optimality. Optimization status:", model.status)
+
+
+if model.status == GRB.INF_OR_UNBD or model.status == GRB.INFEASIBLE:
+    print('Model is infeasible; running IIS')
+    model.computeIIS()  # This function identifies the Irreducible Inconsistent Subsystem
+    model.write("model.ilp")
+    print('IIS written to file model.ilp')
+    print('The following constraint(s) cannot be satisfied:')
+    for c in model.getConstrs():
+        if c.IISConstr:
+            print('%s' % c.constrName)
