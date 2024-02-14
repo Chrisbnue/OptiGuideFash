@@ -78,7 +78,7 @@ model.setObjective(
     GRB.MINIMIZE)
 
 # Conservation of flow constraint
-for r in ['EU', 'NAM', 'GCA', 'LAM']:
+for r in ['EU', 'NAM', 'GCA']:
     model.addConstr(
         sum(x[i] for i in shipping_cost_from_supplier_to_DC.keys() if i[1] == r) ==
         sum(y_ftw[(r, c)] + y_app[(r, c)] for c in ['Retail', 'WHS', 'Ecom']), f"flow_{r}")
